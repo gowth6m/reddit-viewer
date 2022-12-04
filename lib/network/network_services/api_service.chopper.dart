@@ -17,8 +17,8 @@ class _$ApiService extends ApiService {
   final definitionType = ApiService;
 
   @override
-  Future<Response<dynamic>> getAllPosts() {
-    final String $url = 'https://www.reddit.com/r/FlutterDev.json';
+  Future<Response<dynamic>> getAllPosts(String subreddit) {
+    final String $url = 'https://www.reddit.com/r/${subreddit}.json';
     final Request $request = Request(
       'GET',
       $url,

@@ -15,12 +15,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late ApiService apiService;
   late Future<Response> apiResponse;
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     apiService = ApiService.create();
-    apiResponse = apiService.getAllPosts();
+    apiResponse = apiService.getAllPosts('LeagueOfLegends');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -39,6 +46,44 @@ class _HomePageState extends State<HomePage> {
 
             return CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 100,
+                    color: Color.fromARGB(255, 139, 139, 139),
+                    child: Center(
+                      child: TextField(
+                        controller: _controller,
+                        onChanged: (String value) async {
+                          if (value != '13') {
+                            return;
+                          }
+
+                          // await showDialog<void>(
+                          //   context: context,
+                          //   builder: (BuildContext context) {
+                          //     return AlertDialog(
+                          //       title: const Text('That is correct!'),
+                          //       content: const Text('13 is the right answer.'),
+                          //       actions: <Widget>[
+                          //         TextButton(
+                          //           onPressed: () {
+                          //             Navigator.pop(context);
+                          //           },
+                          //           child: const Text('OK'),
+                          //         ),
+                          //       ],
+                          //     );
+                          //   },
+                          // );
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter /r/FlutterDev',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
