@@ -12,6 +12,7 @@ T3Data _$T3DataFromJson(Map<String, dynamic> json) => T3Data(
       selftext: json['selftext'] as String?,
       url: json['url'] as String?,
       permalink: json['permalink'] as String?,
+      link_flair_text: json['link_flair_text'] as String?,
     );
 
 Map<String, dynamic> _$T3DataToJson(T3Data instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$T3DataToJson(T3Data instance) => <String, dynamic>{
       'selftext': instance.selftext,
       'url': instance.url,
       'permalink': instance.permalink,
+      'link_flair_text': instance.link_flair_text,
     };

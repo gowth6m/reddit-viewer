@@ -22,15 +22,26 @@ class _HomePageState extends State<HomePage> {
   final debouncer = Debouncer(milliseconds: 500);
   bool _searchBoolean = false;
   String currentSearch = '';
+  final ScrollController _controller = ScrollController();
+  bool scrolled = false;
 
   @override
   void initState() {
     super.initState();
+    _controller.addListener(_onScrollEvent);
     apiService = ApiService.create();
   }
 
   @override
+  void dispose() {
+    _controller.removeListener(_onScrollEvent);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: DesignColors.redditOrange,
@@ -66,11 +77,26 @@ class _HomePageState extends State<HomePage> {
 
                   // If response is successful, create object from json & show results
                   final Listing posts = Listing.fromJson(snapshot.data?.body);
+
                   return CustomScrollView(
+                    controller: _controller,
                     slivers: [
                       SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
+                            final title =
+                                posts.data?.children?[index].data?.title ??
+                                    'No title';
+                            final author =
+                                posts.data?.children?[index].data?.author ??
+                                    'No author';
+                            final tag = posts.data?.children?[index].data
+                                    ?.link_flair_text ??
+                                'No tag';
+
+                            final selfText =
+                                posts.data?.children?[index].data?.selftext;
+
                             return InkWell(
                               onTap: () async {
                                 await launchUrl(
@@ -80,21 +106,12 @@ class _HomePageState extends State<HomePage> {
                                   webOnlyWindowName: '_blank',
                                 );
                               },
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(
-                                      posts.data?.children?[index].data
-                                              ?.title ??
-                                          'No title',
-                                    ),
-                                    subtitle: Text(
-                                      'author: ${posts.data?.children?[index].data?.author}',
-                                    ),
-                                  ),
-                                  const Divider(),
-                                ],
-                              ),
+                              child: _RedditListItemWidget(
+                                  title: title,
+                                  theme: theme,
+                                  author: author,
+                                  tag: tag,
+                                  selfText: selfText),
                             );
                           },
                           childCount: posts.data?.children?.length ?? 0,
@@ -111,6 +128,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// Appbar subreddit search
   Widget _searchTextField() {
     return TextField(
       autofocus: true,
@@ -131,6 +149,9 @@ class _HomePageState extends State<HomePage> {
           fontSize: 16,
         ),
       ),
+      onSubmitted: (value) {
+        _searchBoolean = false;
+      },
       onChanged: (value) {
         debouncer.run(() {
           if (value != '') {
@@ -140,11 +161,80 @@ class _HomePageState extends State<HomePage> {
             apiResponse = apiService.getAllPosts(value);
             setState(() {
               currentSearch = value;
-              appbarTitle = value;
+              appbarTitle = 'r/$value';
             });
           }
         });
       },
+    );
+  }
+
+  /// To remove the search bar selected when user scrolls down
+  void _onScrollEvent() {
+    _searchBoolean = false;
+    setState(() {});
+  }
+}
+
+/// Widget to display each post in the list
+class _RedditListItemWidget extends StatelessWidget {
+  const _RedditListItemWidget({
+    Key? key,
+    required this.title,
+    required this.theme,
+    required this.author,
+    required this.tag,
+    required this.selfText,
+  }) : super(key: key);
+
+  final String title;
+  final ThemeData theme;
+  final String author;
+  final String tag;
+  final String? selfText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text(title, style: theme.textTheme.headline6),
+          subtitle: Text('author: $author'),
+          trailing: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              color: DesignColors.redditOrange,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  DesignSpacing.small,
+                  DesignSpacing.tiny,
+                  DesignSpacing.small,
+                  DesignSpacing.tiny,
+                ),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: DesignColors.light,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        selfText != ''
+            ? Padding(
+                padding: const EdgeInsets.all(
+                  DesignSpacing.medium,
+                ),
+                child: Text(
+                  selfText!,
+                  maxLines: 4,
+                ),
+              )
+            : Container(),
+        const Divider(),
+      ],
     );
   }
 }

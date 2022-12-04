@@ -10,6 +10,7 @@ class T3Data {
     this.selftext,
     this.url,
     this.permalink,
+    this.link_flair_text,
   });
 
   String? author;
@@ -17,6 +18,7 @@ class T3Data {
   String? selftext;
   String? url;
   String? permalink;
+  String? link_flair_text;
 
   factory T3Data.fromJson(Map<String, dynamic> json) => _$T3DataFromJson(json);
 
