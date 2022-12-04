@@ -1,5 +1,6 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:reddit_viewer/network/model/listing.dart';
 import 'package:reddit_viewer/network/network_services/api_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,7 +33,43 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             print(snapshot.data?.body);
-            return Text(snapshot.data.toString());
+
+            final Listing posts = Listing.fromJson(snapshot.data?.body);
+
+            return CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final String title =
+                          posts.data?.children?[index].data?.title ??
+                              'No title';
+
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(
+                              posts.data?.children?[index].data?.title ??
+                                  'No title',
+                            ),
+                          ),
+                          // Text(
+                          //   posts.data?.children?[index].data?.selftext ??
+                          //       'No selfText',
+                          // ),
+                          Text(
+                            posts.data?.children?[index].data?.author ??
+                                'No author',
+                          ),
+                          const Divider(),
+                        ],
+                      );
+                    },
+                    childCount: posts.data?.children?.length ?? 0,
+                  ),
+                ),
+              ],
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }

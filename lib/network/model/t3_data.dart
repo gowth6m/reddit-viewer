@@ -1,10 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'post.g.dart';
+part 't3_data.g.dart';
 
 @JsonSerializable()
-class Post {
-  Post({
+class T3Data {
+  T3Data({
     this.author,
     this.title,
     this.selftext,
@@ -14,7 +14,7 @@ class Post {
   String? title;
   String? selftext;
 
-  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+  factory T3Data.fromJson(Map<String, dynamic> json) => _$T3DataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PostToJson(this);
+  Map<String, dynamic> toJson() => _$T3DataToJson(this);
 }
