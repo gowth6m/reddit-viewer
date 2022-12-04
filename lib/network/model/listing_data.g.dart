@@ -1,17 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'post_data.dart';
+part of 'listing_data.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-PostData _$PostDataFromJson(Map<String, dynamic> json) => PostData(
+ListingData _$ListingDataFromJson(Map<String, dynamic> json) => ListingData(
+      dist: json['dist'] as int?,
       children: (json['children'] as List<dynamic>?)
-          ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => T3.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$PostDataToJson(PostData instance) => <String, dynamic>{
+Map<String, dynamic> _$ListingDataToJson(ListingData instance) =>
+    <String, dynamic>{
+      'dist': instance.dist,
       'children': instance.children,
     };
