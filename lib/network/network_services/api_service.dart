@@ -1,5 +1,5 @@
 import 'package:chopper/chopper.dart';
-import 'package:reddit_viewer/network/network_services/globals.dart';
+import 'package:reddit_viewer/misc/globals.dart';
 
 // this is necessary for the generated code to find your class
 part 'api_service.chopper.dart';

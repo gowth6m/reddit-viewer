@@ -2,6 +2,8 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:reddit_viewer/network/model/listing.dart';
 import 'package:reddit_viewer/network/network_services/api_service.dart';
+import 'package:reddit_viewer/misc/globals.dart';
+import 'package:reddit_viewer/misc/design.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'debouncer.dart';
@@ -31,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          backgroundColor: DesignColors.redditOrange,
           title: !_searchBoolean ? Text(appbarTitle) : _searchTextField(),
           actions: !_searchBoolean
               ? [
@@ -56,15 +59,13 @@ class _HomePageState extends State<HomePage> {
               future: apiResponse,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  // print(snapshot.data?.body);
-
-                  if (snapshot.data == null) {
-                    return const Center(
-                      child: Text('Error'),
-                    );
+                  // If response is unsuccessful, show error message widget
+                  if (snapshot.data?.body == null) {
+                    return const _InvalidSearch();
                   }
-                  final Listing posts = Listing.fromJson(snapshot.data?.body);
 
+                  // If response is successful, create object from json & show results
+                  final Listing posts = Listing.fromJson(snapshot.data?.body);
                   return CustomScrollView(
                     slivers: [
                       SliverList(
@@ -74,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                               onTap: () async {
                                 await launchUrl(
                                   Uri.parse(
-                                    'https://www.reddit.com${posts.data?.children?[index].data?.permalink}',
+                                    '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
                                   ),
                                   webOnlyWindowName: '_blank',
                                 );
@@ -106,24 +107,7 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'Search for a subreddit',
-                    style: TextStyle(fontSize: 20, color: Colors.grey),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    'Example: FlutterDev',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  )
-                ],
-              ),
-            ),
+          : const _InitialDisplay(),
     );
   }
 
@@ -144,7 +128,7 @@ class _HomePageState extends State<HomePage> {
         hintText: 'Search',
         hintStyle: TextStyle(
           color: Colors.white60,
-          fontSize: 20,
+          fontSize: 16,
         ),
       ),
       onChanged: (value) {
@@ -152,23 +136,71 @@ class _HomePageState extends State<HomePage> {
           if (value != '') {
             // Removing spaces from search query for better search results
             value = value.replaceAll(' ', '');
-            try {
-              setState(() {
-                currentSearch = value;
-                apiResponse = apiService.getAllPosts(currentSearch);
-                print('API RESPONSE = $apiResponse');
-              });
-            } catch (e) {
-              print(e);
-            }
-            // apiResponse = apiService.getAllPosts(value);
-            // setState(() {
-            //   currentSearch = value;
-            //   appbarTitle = value;
-            // });
+
+            apiResponse = apiService.getAllPosts(value);
+            setState(() {
+              currentSearch = value;
+              appbarTitle = value;
+            });
           }
         });
       },
+    );
+  }
+}
+
+class _InitialDisplay extends StatelessWidget {
+  const _InitialDisplay({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text(
+            'Search for a subreddit',
+            style: TextStyle(fontSize: 20, color: Colors.grey),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Example: FlutterDev',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _InvalidSearch extends StatelessWidget {
+  const _InvalidSearch({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text(
+            'Invalid subreddit',
+            style: TextStyle(fontSize: 20, color: Colors.grey),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Try another subreddit',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          )
+        ],
+      ),
     );
   }
 }
