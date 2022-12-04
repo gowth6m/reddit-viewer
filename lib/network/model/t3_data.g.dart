@@ -10,10 +10,14 @@ T3Data _$T3DataFromJson(Map<String, dynamic> json) => T3Data(
       author: json['author'] as String?,
       title: json['title'] as String?,
       selftext: json['selftext'] as String?,
+      url: json['url'] as String?,
+      permalink: json['permalink'] as String?,
     );
 
 Map<String, dynamic> _$T3DataToJson(T3Data instance) => <String, dynamic>{
       'author': instance.author,
       'title': instance.title,
       'selftext': instance.selftext,
+      'url': instance.url,
+      'permalink': instance.permalink,
     };

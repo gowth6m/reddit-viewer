@@ -2,6 +2,7 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:reddit_viewer/network/model/listing.dart';
 import 'package:reddit_viewer/network/network_services/api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -41,28 +42,33 @@ class _HomePageState extends State<HomePage> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final String title =
-                          posts.data?.children?[index].data?.title ??
-                              'No title';
+                      return InkWell(
+                        onTap: () async {
+                          print(
+                            '${posts.data?.children?[index].data?.permalink}',
+                          );
 
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: Text(
-                              posts.data?.children?[index].data?.title ??
-                                  'No title',
+                          await launchUrl(
+                            Uri.parse(
+                              'https://www.reddit.com${posts.data?.children?[index].data?.permalink}',
                             ),
-                          ),
-                          // Text(
-                          //   posts.data?.children?[index].data?.selftext ??
-                          //       'No selfText',
-                          // ),
-                          Text(
-                            posts.data?.children?[index].data?.author ??
-                                'No author',
-                          ),
-                          const Divider(),
-                        ],
+                            webOnlyWindowName: '_blank',
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                posts.data?.children?[index].data?.title ??
+                                    'No title',
+                              ),
+                              subtitle: Text(
+                                'author: ${posts.data?.children?[index].data?.author}',
+                              ),
+                            ),
+                            const Divider(),
+                          ],
+                        ),
                       );
                     },
                     childCount: posts.data?.children?.length ?? 0,

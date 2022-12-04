@@ -8,11 +8,15 @@ class T3Data {
     this.author,
     this.title,
     this.selftext,
+    this.url,
+    this.permalink,
   });
 
   String? author;
   String? title;
   String? selftext;
+  String? url;
+  String? permalink;
 
   factory T3Data.fromJson(Map<String, dynamic> json) => _$T3DataFromJson(json);
 
