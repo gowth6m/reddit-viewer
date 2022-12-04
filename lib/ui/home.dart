@@ -1,5 +1,6 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:reddit_viewer/network/model/listing.dart';
 import 'package:reddit_viewer/network/network_services/api_service.dart';
 import 'package:reddit_viewer/misc/globals.dart';
@@ -16,14 +17,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _controller = ScrollController();
+  final debouncer = Debouncer(milliseconds: 500);
   late String appbarTitle = 'Reddit Viewer';
   late ApiService apiService;
   late Future<Response> apiResponse;
-  final debouncer = Debouncer(milliseconds: 500);
   bool _searchBoolean = false;
-  String currentSearch = '';
-  final ScrollController _controller = ScrollController();
   bool scrolled = false;
+  String currentSearch = '';
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
+          leading: !_searchBoolean ? const _RedditIcon() : null,
           backgroundColor: DesignColors.redditOrange,
           title: !_searchBoolean ? Text(appbarTitle) : _searchTextField(),
           actions: !_searchBoolean
@@ -176,6 +178,26 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class _RedditIcon extends StatelessWidget {
+  const _RedditIcon({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: SvgPicture.asset(
+        'assets/images/reddit_logo.svg',
+        height: 20.0,
+        width: 20.0,
+        color: DesignColors.light,
+        allowDrawingOutsideViewBox: false,
+      ),
+    );
+  }
+}
+
 /// Widget to display each post in the list
 class _RedditListItemWidget extends StatelessWidget {
   const _RedditListItemWidget({
@@ -227,9 +249,19 @@ class _RedditListItemWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(
                   DesignSpacing.medium,
                 ),
-                child: Text(
-                  selfText!,
-                  maxLines: 4,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      selfText!,
+                      maxLines: 4,
+                    ),
+                    const Text('...',
+                        style: TextStyle(
+                          fontSize: 40.0,
+                          color: DesignColors.grey,
+                        )),
+                  ],
                 ),
               )
             : Container(),
@@ -239,6 +271,7 @@ class _RedditListItemWidget extends StatelessWidget {
   }
 }
 
+/// Widget to display when there is no search query
 class _InitialDisplay extends StatelessWidget {
   const _InitialDisplay({
     Key? key,
@@ -267,6 +300,7 @@ class _InitialDisplay extends StatelessWidget {
   }
 }
 
+/// Widget to display when search query is invalid
 class _InvalidSearch extends StatelessWidget {
   const _InvalidSearch({
     Key? key,
