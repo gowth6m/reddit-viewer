@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:netshells_flutter_test/misc/design.dart';
-import 'package:netshells_flutter_test/ui/home_page.dart';
+import 'package:reddit_viewer/misc/design.dart';
+import 'package:reddit_viewer/ui/home_page.dart';
 
 void main() {
   runApp(const MyApp());

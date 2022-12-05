@@ -1,5 +1,5 @@
 import 'package:chopper/chopper.dart';
-import 'package:netshells_flutter_test/misc/globals.dart';
+import 'package:reddit_viewer/misc/globals.dart';
 
 // required to find the generated file
 part 'reddit_api_service.chopper.dart';

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:netshells_flutter_test/network/models/listing_data.dart';
+import 'package:reddit_viewer/network/models/listing_data.dart';
 
 // this is necessary for the generated code to find your class
 part 'listing.g.dart';

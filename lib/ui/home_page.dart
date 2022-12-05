@@ -1,13 +1,11 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-import 'package:netshells_flutter_test/misc/globals.dart';
-import 'package:netshells_flutter_test/misc/design.dart';
-import 'package:netshells_flutter_test/network/models/listing.dart';
-import 'package:netshells_flutter_test/network/network_services/reddit_api_service.dart';
+import 'package:reddit_viewer/misc/globals.dart';
+import 'package:reddit_viewer/misc/design.dart';
+import 'package:reddit_viewer/network/models/listing.dart';
+import 'package:reddit_viewer/network/network_services/reddit_api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../misc/debouncer.dart';
 
 class HomePage extends StatefulWidget {
