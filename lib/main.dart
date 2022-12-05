@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'ui/home.dart';
+import 'package:netshells_flutter_test/misc/design.dart';
+import 'package:netshells_flutter_test/ui/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Reddit Viewer',
       theme: ThemeData(
-        primaryColor: const Color.fromARGB(255, 255, 86, 0),
+        primaryColor: DesignColors.redditOrange,
       ),
       home: const HomePage(),
     );

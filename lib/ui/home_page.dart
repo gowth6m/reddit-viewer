@@ -1,13 +1,14 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:reddit_viewer/network/model/listing.dart';
-import 'package:reddit_viewer/network/network_services/api_service.dart';
-import 'package:reddit_viewer/misc/globals.dart';
-import 'package:reddit_viewer/misc/design.dart';
+
+import 'package:netshells_flutter_test/misc/globals.dart';
+import 'package:netshells_flutter_test/misc/design.dart';
+import 'package:netshells_flutter_test/network/models/listing.dart';
+import 'package:netshells_flutter_test/network/network_services/reddit_api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'debouncer.dart';
+import '../misc/debouncer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _controller = ScrollController();
   final debouncer = Debouncer(milliseconds: 500);
   late String appbarTitle = 'Reddit Viewer';
-  late ApiService apiService;
+  late RedditApiService redditApiService;
   late Future<Response> apiResponse;
   bool _searchBoolean = false;
   bool scrolled = false;
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _controller.addListener(_onScrollEvent);
-    apiService = ApiService.create();
+    redditApiService = RedditApiService.create();
   }
 
   @override
@@ -43,90 +44,98 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-          leading: !_searchBoolean ? const _RedditIcon() : null,
-          backgroundColor: DesignColors.redditOrange,
-          title: !_searchBoolean ? Text(appbarTitle) : _searchTextField(),
-          actions: !_searchBoolean
-              ? [
-                  IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () {
-                        setState(() {
-                          _searchBoolean = true;
-                        });
-                      })
-                ]
-              : [
-                  IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        setState(() {
-                          _searchBoolean = false;
-                        });
-                      })
-                ]),
-      body: currentSearch != ''
-          ? FutureBuilder<Response>(
-              future: apiResponse,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // If response is unsuccessful, show error message widget
-                  if (snapshot.data?.body == null) {
-                    return const _InvalidSearch();
-                  }
+    return SafeArea(
+      bottom: true,
+      left: true,
+      top: true,
+      right: true,
+      maintainBottomViewPadding: true,
+      minimum: EdgeInsets.zero,
+      child: Scaffold(
+        appBar: AppBar(
+            leading: !_searchBoolean ? const _RedditIcon() : null,
+            backgroundColor: DesignColors.redditOrange,
+            title: !_searchBoolean ? Text(appbarTitle) : _searchTextField(),
+            actions: !_searchBoolean
+                ? [
+                    IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          setState(() {
+                            _searchBoolean = true;
+                          });
+                        })
+                  ]
+                : [
+                    IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchBoolean = false;
+                          });
+                        })
+                  ]),
+        body: currentSearch != ''
+            ? FutureBuilder<Response>(
+                future: apiResponse,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If response is unsuccessful, show error message widget
+                    if (snapshot.data?.body == null) {
+                      return const _InvalidSearch();
+                    }
 
-                  // If response is successful, create object from json & show results
-                  final Listing posts = Listing.fromJson(snapshot.data?.body);
+                    // If response is successful, create object from json & show results
+                    final Listing posts = Listing.fromJson(snapshot.data?.body);
 
-                  return CustomScrollView(
-                    controller: _controller,
-                    slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final title =
-                                posts.data?.children?[index].data?.title ??
-                                    'No title';
-                            final author =
-                                posts.data?.children?[index].data?.author ??
-                                    'No author';
-                            final tag = posts.data?.children?[index].data
-                                    ?.link_flair_text ??
-                                'No tag';
+                    return CustomScrollView(
+                      controller: _controller,
+                      slivers: [
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final title =
+                                  posts.data?.children?[index].data?.title ??
+                                      'No title';
+                              final author =
+                                  posts.data?.children?[index].data?.author ??
+                                      'No author';
+                              final tag = posts.data?.children?[index].data
+                                      ?.link_flair_text ??
+                                  'No tag';
 
-                            final selfText =
-                                posts.data?.children?[index].data?.selftext;
+                              final selfText =
+                                  posts.data?.children?[index].data?.selftext;
 
-                            return InkWell(
-                              onTap: () async {
-                                await launchUrl(
-                                  Uri.parse(
-                                    '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
-                                  ),
-                                  webOnlyWindowName: '_blank',
-                                );
-                              },
-                              child: _RedditListItemWidget(
-                                  title: title,
-                                  theme: theme,
-                                  author: author,
-                                  tag: tag,
-                                  selfText: selfText),
-                            );
-                          },
-                          childCount: posts.data?.children?.length ?? 0,
+                              return InkWell(
+                                onTap: () async {
+                                  await launchUrl(
+                                    Uri.parse(
+                                      '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
+                                    ),
+                                    webOnlyWindowName: '_blank',
+                                  );
+                                },
+                                child: _RedditListItemWidget(
+                                    title: title,
+                                    theme: theme,
+                                    author: author,
+                                    tag: tag,
+                                    selfText: selfText),
+                              );
+                            },
+                            childCount: posts.data?.children?.length ?? 0,
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            )
-          : const _InitialDisplay(),
+                      ],
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              )
+            : const _InitialDisplay(),
+      ),
     );
   }
 
@@ -160,7 +169,7 @@ class _HomePageState extends State<HomePage> {
             // Removing spaces from search query for better search results
             value = value.replaceAll(' ', '');
 
-            apiResponse = apiService.getAllPosts(value);
+            apiResponse = redditApiService.getAllPosts(value);
             setState(() {
               currentSearch = value;
               appbarTitle = 'r/$value';
@@ -255,6 +264,7 @@ class _RedditListItemWidget extends StatelessWidget {
                     Text(
                       selfText!,
                       maxLines: 4,
+                      overflow: TextOverflow.fade,
                     ),
                     const Text('...',
                         style: TextStyle(
@@ -313,15 +323,17 @@ class _InvalidSearch extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
           Text(
-            'Invalid subreddit',
+            'Couldn\'t find anything',
             style: TextStyle(fontSize: 20, color: Colors.grey),
           ),
           SizedBox(
             height: 20,
           ),
           Text(
-            'Try another subreddit',
+            'Try another search or check your internet connection',
             style: TextStyle(fontSize: 16, color: Colors.grey),
+            overflow: TextOverflow.clip,
+            textAlign: TextAlign.center,
           )
         ],
       ),

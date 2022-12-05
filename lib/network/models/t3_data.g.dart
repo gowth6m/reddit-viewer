@@ -13,7 +13,7 @@ T3Data _$T3DataFromJson(Map<String, dynamic> json) => T3Data(
       url: json['url'] as String?,
       permalink: json['permalink'] as String?,
       link_flair_text: json['link_flair_text'] as String?,
-    );
+    )..subreddit = json['subreddit'] as String?;
 
 Map<String, dynamic> _$T3DataToJson(T3Data instance) => <String, dynamic>{
       'author': instance.author,
@@ -22,4 +22,5 @@ Map<String, dynamic> _$T3DataToJson(T3Data instance) => <String, dynamic>{
       'url': instance.url,
       'permalink': instance.permalink,
       'link_flair_text': instance.link_flair_text,
+      'subreddit': instance.subreddit,
     };

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:reddit_viewer/network/model/t3_data.dart';
+import 'package:netshells_flutter_test/network/models/t3_data.dart';
 
 part 't3.g.dart';
 

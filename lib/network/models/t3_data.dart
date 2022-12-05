@@ -21,6 +21,7 @@ class T3Data {
   String? permalink;
   // ignore: non_constant_identifier_names
   String? link_flair_text;
+  String? subreddit;
 
   factory T3Data.fromJson(Map<String, dynamic> json) => _$T3DataFromJson(json);
 
