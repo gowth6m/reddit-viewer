@@ -107,12 +107,90 @@ class _HomePageState extends State<HomePage> {
 
                               return InkWell(
                                 onTap: () async {
-                                  await launchUrl(
-                                    Uri.parse(
-                                      '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
-                                    ),
-                                    webOnlyWindowName: '_blank',
+                                  return showDialog<void>(
+                                    context: context,
+                                    barrierDismissible:
+                                        false, // user must tap button!
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(title),
+                                        content: SingleChildScrollView(
+                                          child: ListBody(
+                                            children: <Widget>[
+                                              Text('Author: $author'),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text('$selfText'),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty
+                                                      .resolveWith((states) {
+                                                // If the button is pressed, return green, otherwise blue
+                                                if (states.contains(
+                                                    MaterialState.pressed)) {
+                                                  return DesignColors
+                                                      .redditOrange;
+                                                }
+                                                return DesignColors
+                                                    .redditOrange;
+                                              }),
+                                            ),
+                                            child: const Text('View'),
+                                            onPressed: () async {
+                                              await launchUrl(
+                                                Uri.parse(
+                                                  '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
+                                                ),
+                                                webOnlyWindowName: '_blank',
+                                              );
+                                            },
+                                          ),
+                                          TextButton(
+                                            style: ButtonStyle(
+                                              foregroundColor:
+                                                  MaterialStateProperty
+                                                      .resolveWith((states) {
+                                                // If the button is pressed, return green, otherwise blue
+                                                if (states.contains(
+                                                    MaterialState.pressed)) {
+                                                  return Colors.white;
+                                                }
+                                                return Colors.white;
+                                              }),
+                                              backgroundColor:
+                                                  MaterialStateProperty
+                                                      .resolveWith((states) {
+                                                // If the button is pressed, return green, otherwise blue
+                                                if (states.contains(
+                                                    MaterialState.pressed)) {
+                                                  return DesignColors
+                                                      .redditOrange;
+                                                }
+                                                return DesignColors
+                                                    .redditOrange;
+                                              }),
+                                            ),
+                                            child: const Text('Close'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
+                                  // await launchUrl(
+                                  //   Uri.parse(
+                                  //     '${Globals.endpointPrefix}${posts.data?.children?[index].data?.permalink}',
+                                  //   ),
+                                  //   webOnlyWindowName: '_blank',
+                                  // );
                                 },
                                 child: _RedditListItemWidget(
                                     title: title,
